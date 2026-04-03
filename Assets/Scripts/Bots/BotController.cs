@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(RaycastFiring))]
 
 public class BotController : MonoBehaviour
 {
@@ -40,8 +41,13 @@ public class BotController : MonoBehaviour
 
     //AI Pathfinding Requirements
     private NavMeshAgent NavAgent;
+
+    //Firing Requirements
+    public RaycastFiring FiringAgent;
+
     void Awake()
     {
+        FiringAgent = GetComponent<RaycastFiring>();
         NavAgent = GetComponent<NavMeshAgent>();
         NavAgent.stoppingDistance = stoppingDistance;
     }
@@ -97,6 +103,12 @@ public class BotController : MonoBehaviour
         }
         // Otherwise, just stand still
         NavAgent.isStopped = true;
+
+        bool EnemyFound = ScanEnemies();
+        if (EnemyFound)
+        {
+            infantryState = InfantryState.Combat;
+        }
     }
 
     public void RideVehicle()
@@ -105,8 +117,7 @@ public class BotController : MonoBehaviour
         // The bot should follow the vehicle's movement
         if (currentVehicle != null)
         {
-            transform.position = vehicleSeat.position;
-            transform.rotation = vehicleSeat.rotation;
+            transform.SetPositionAndRotation(vehicleSeat.position, vehicleSeat.rotation);
             NavAgent.enabled = false; // Disable NavMeshAgent when riding
         }
         else
@@ -225,12 +236,14 @@ public class BotController : MonoBehaviour
         }
         else
         {
-            NavAgent.isStopped = true; // Stop moving to attack
+            //Strafing logic (idk)
+
+
             // Attack logic
             if (Time.time - lastAttackTime >= attackCooldown)
             {
                 Debug.Log("Attacking " + currentTarget.name);
-                // Implement actual attack (e.g., shoot a projectile, deal damage)
+                FiringAgent.isFiring = true;
                 lastAttackTime = Time.time;
             }
         }
