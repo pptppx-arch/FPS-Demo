@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(RaycastFiring))]
 
 public class BotController : MonoBehaviour
 {
@@ -37,24 +36,24 @@ public class BotController : MonoBehaviour
     public enum VehicleState { Driving, Firing, Passenger, ExitVehicle }
     public VehicleState vehicleState;
 
-    public bool Infantry;
+    public bool IsInfantry;
 
     //AI Pathfinding Requirements
     private NavMeshAgent NavAgent;
 
-    //Firing Requirements
-    public RaycastFiring FiringAgent;
+    //Firing Agent Requirements
+    private RaycastFiring[] allFiringAgents;
 
     void Awake()
     {
-        FiringAgent = GetComponent<RaycastFiring>();
+        allFiringAgents = GetComponentsInChildren<RaycastFiring>();
         NavAgent = GetComponent<NavMeshAgent>();
         NavAgent.stoppingDistance = stoppingDistance;
     }
 
     void Update()
     {
-        if (Infantry)
+        if (IsInfantry)
         {
             switch (infantryState)
             {
@@ -123,7 +122,7 @@ public class BotController : MonoBehaviour
         else
         {
             // If no vehicle, something went wrong, revert to infantry navigation
-            Infantry = true;
+            IsInfantry = true;
             infantryState = InfantryState.Navigation;
             NavAgent.enabled = true;
         }
@@ -220,6 +219,8 @@ public class BotController : MonoBehaviour
 
     public void Combat()
     {
+        ScanEnemies();
+
         if (currentTarget == null)
         {
             // Target lost, revert to navigation
@@ -239,11 +240,23 @@ public class BotController : MonoBehaviour
             //Strafing logic (idk)
 
 
+            //Rotation logic
+            Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
+            directionToTarget.y = 0f; // Keep rotation only on Y axis (horizontal)
+            if (directionToTarget != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 1 * Time.deltaTime);
+            }
+
             // Attack logic
             if (Time.time - lastAttackTime >= attackCooldown)
             {
                 Debug.Log("Attacking " + currentTarget.name);
-                FiringAgent.isFiring = true;
+                foreach (RaycastFiring FiringAgent in allFiringAgents)
+                {
+                    FiringAgent.isFiring = true;
+                }
                 lastAttackTime = Time.time;
             }
         }
@@ -267,7 +280,7 @@ public class BotController : MonoBehaviour
             if (Vector3.Distance(transform.position, vehicleSeat.position) < vehicleEnterDistance)
             {
                 // Once close enough, enter the vehicle
-                Infantry = false;
+                IsInfantry = false;
                 vehicleState = VehicleState.Driving; // Or Passenger, depending on role
                 NavAgent.enabled = false; // Disable NavMeshAgent when in vehicle
                 transform.SetParent(vehicleSeat); // Parent bot to vehicle seat
@@ -288,7 +301,7 @@ public class BotController : MonoBehaviour
         {
             // Detach from vehicle
             transform.SetParent(null);
-            Infantry = true;
+            IsInfantry = true;
             NavAgent.enabled = true;
             // Find a safe spot to exit, for now just exit at current position
             infantryState = InfantryState.Idle; // Or Navigation

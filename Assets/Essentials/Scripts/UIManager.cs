@@ -29,6 +29,7 @@ public class UIManager : MonoBehaviour
     
     public void Update()
     {
+        Debug.Log($"{RaycastFiring.magAmmoUI}");
         health.text = $"{PlayerHealth.health}";
         magazineAmmoUI.text = $"{RaycastFiring.magAmmoUI}";
         totalAmmoUI.text = $"{RaycastFiring.totalAmmoUI}";

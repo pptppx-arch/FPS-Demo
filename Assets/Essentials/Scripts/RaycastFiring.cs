@@ -169,6 +169,7 @@ public class RaycastFiring : MonoBehaviour
         {
             BurstBulletsLeft = bulletsPerBurst;
         }
+        isFiring = false;
     }
 
     private Vector3 ApplySpread(Vector3 direction)
