@@ -73,9 +73,12 @@ public class RaycastFiring : MonoBehaviour
             FireWeapon();
         }
 
-        // UI Broadcast logic (simplified for example)
-        magAmmoUI = bulletsLeft;
-        totalAmmoUI = TotalBullets;
+        if (!IsBotUsing)
+        {
+            // UI Broadcast logic (simplified for example)
+            magAmmoUI = bulletsLeft;
+            totalAmmoUI = TotalBullets;
+        }
     }
 
     public void FireWeapon()
@@ -192,7 +195,7 @@ public class RaycastFiring : MonoBehaviour
 
     private void HandlePlayerReloadInput()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) | bulletsLeft == 0 && TotalBullets > 0 && autoReloadOnEmpty)
             Reload();
     }
 

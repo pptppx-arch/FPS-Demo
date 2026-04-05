@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
-
 public class BotController : MonoBehaviour
 {
     [Header("Detection")]
@@ -47,8 +45,9 @@ public class BotController : MonoBehaviour
     void Awake()
     {
         allFiringAgents = GetComponentsInChildren<RaycastFiring>();
-        NavAgent = GetComponent<NavMeshAgent>();
+        NavAgent = GetComponentInParent<NavMeshAgent>();
         NavAgent.stoppingDistance = stoppingDistance;
+        NavAgent.updateRotation = false;
     }
 
     void Update()
@@ -223,30 +222,38 @@ public class BotController : MonoBehaviour
 
         if (currentTarget == null)
         {
-            // Target lost, revert to navigation
             infantryState = InfantryState.Navigation;
             return;
         }
 
-        // Move towards target until within attack range
         float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+        Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
+
         if (distanceToTarget > attackRange)
         {
+            // Move towards the target
             NavAgent.isStopped = false;
             NavAgent.SetDestination(currentTarget.position);
-        }
-        else
-        {
-            //Strafing logic (idk)
 
-
-            //Rotation logic
-            Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
-            directionToTarget.y = 0f; // Keep rotation only on Y axis (horizontal)
+            // Let the NavMeshAgent handle rotation while moving (smooth path following)
+            // Since we disabled auto-rotation globally, we can optionally re-enable it here.
+            // But for simplicity, we still manually rotate with a higher speed.
             if (directionToTarget != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 1 * Time.deltaTime);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360f * Time.deltaTime);
+            }
+        }
+        else
+        {
+            // Within attack range: stop moving, only rotate and shoot
+            NavAgent.isStopped = true;
+
+            // Rotate to face the target (fast enough to track moving enemies)
+            if (directionToTarget != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360f * Time.deltaTime);
             }
 
             // Attack logic
@@ -261,11 +268,12 @@ public class BotController : MonoBehaviour
             }
         }
 
-        // Check if enemy is still in detection range, if not, go back to navigation
-        if (distanceToTarget > detectionRange + 5f) // Add a small buffer for detection loss
+        // If the enemy leaves the extended detection range, go back to navigation
+        if (distanceToTarget > detectionRange + 5f)
         {
             infantryState = InfantryState.Navigation;
             currentTarget = null;
+            NavAgent.isStopped = false;   // resume movement
         }
     }
 

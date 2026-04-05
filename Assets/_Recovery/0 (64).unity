@@ -8379,67 +8379,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2191666470857331508, guid: 8b63f536dcb9512418bb18c53c2565c6, type: 3}
   m_PrefabInstance: {fileID: 747625294}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &752592963
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 752592964}
-  - component: {fileID: 752592965}
-  m_Layer: 6
-  m_Name: WeaponContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &752592964
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752592963}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 803351238}
-  m_Father: {fileID: 1648924553}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &752592965
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752592963}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 821c5f2bf530f2140af397fe7520c7fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BotController
-  detectionRange: 20
-  EnemyLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  attackRange: 10
-  attackCooldown: 2
-  waypoints:
-  - {fileID: 1521193706}
-  - {fileID: 531354752}
-  stoppingDistance: 1
-  currentVehicle: {fileID: 0}
-  vehicleSeat: {fileID: 0}
-  vehicleEnterDistance: 2
-  infantryState: 0
-  vehicleState: 0
-  IsInfantry: 1
 --- !u!1001 &762513644
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9081,7 +9020,7 @@ Transform:
   m_Children:
   - {fileID: 264254213}
   - {fileID: 211337686}
-  m_Father: {fileID: 752592964}
+  m_Father: {fileID: 1648924553}
   m_LocalEulerAnglesHint: {x: 0.75, y: 0, z: 0}
 --- !u!114 &803351239
 MonoBehaviour:
@@ -19779,6 +19718,7 @@ GameObject:
   - component: {fileID: 1648924557}
   - component: {fileID: 1648924556}
   - component: {fileID: 1648924555}
+  - component: {fileID: 1648924554}
   m_Layer: 6
   m_Name: Body
   m_TagString: Player
@@ -19799,9 +19739,37 @@ Transform:
   m_LocalScale: {x: 0.95, y: 1, z: 0.95}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 752592964}
+  - {fileID: 803351238}
   m_Father: {fileID: 1594500219}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1648924554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1648924552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 821c5f2bf530f2140af397fe7520c7fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotController
+  detectionRange: 20
+  EnemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  attackRange: 10
+  attackCooldown: 2
+  waypoints:
+  - {fileID: 1521193706}
+  - {fileID: 531354752}
+  stoppingDistance: 1
+  currentVehicle: {fileID: 0}
+  vehicleSeat: {fileID: 0}
+  vehicleEnterDistance: 2
+  infantryState: 0
+  vehicleState: 0
+  IsInfantry: 1
 --- !u!195 &1648924555
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -43906,9 +43874,9 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1521193706}
-  - {fileID: 531354752}
   - {fileID: 559413686}
   - {fileID: 997479499}
   - {fileID: 2554502025901780410}
+  - {fileID: 1521193706}
+  - {fileID: 531354752}
   - {fileID: 1594500219}
